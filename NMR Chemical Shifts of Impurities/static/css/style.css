@@ -1,0 +1,366 @@
+/* General body styles */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Noto Sans SC', sans-serif; /* Choose a font family that matches your design */
+    background-color: #eaeaea; /* Choose a background color that matches your design */
+}
+
+/* Header styles */
+header {
+    background-color: #fff; /* Adjust to match your header background */
+    padding: 10px; /* Add padding to give some space inside the header */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow to the header */
+}
+
+.header-logo {
+    width: 150px; 
+    height: auto;
+}
+
+/* Main content area */
+main {
+    flex-grow: 1;
+    padding: 0 20px; /* 0 padding top and bottom, 20px padding left and right */
+}
+
+
+
+/* Main title */
+h1 {
+    color: #333; /* Adjust title color to match your design */
+    text-align: center; /* Center the title */
+    margin: 0px 0; /* Add some space around the title */
+}
+
+.search-form {
+    max-width: 100%; /* or 100% for full width */
+    margin: 0 auto;
+    padding: 20px;
+    background: #eaeaea; /* or any color you prefer */
+    border-radius: 8px;
+    /*box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* subtle shadow */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* spacing between form elements */
+    align-items: center; /* vertically align all items */
+    flex-direction: column; /* Stack the form rows vertically */
+}
+
+.form-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap;
+    margin-bottom: 5px; /* Decreased space between rows */
+    margin-left: 7px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: row; /* Changed to row layout */
+    align-items: center; /* Align items vertically in the center */
+    margin-right: 10px;
+}
+.or-divider {
+    display: flex;
+    align-items: center; /* Center the divider vertically */
+    margin-right: -35px;
+    margin-left: 40px;
+    margin-top: -4px;
+}
+.form-group label {
+    width: 150px; /* Adjust this width as needed */
+    text-align: right;
+    display: inline-block; /* Allows width to be set */
+    margin-right: 10px; /* Space between label and input/dropdown */
+}
+
+.form-group input[type="text"],
+.form-group select {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    flex-grow: 1; /* Allows the select elements to grow */
+    max-width: 1000px; /* Increase max-width as needed */
+    width: auto; /* Adjust width automatically */
+}
+
+
+/* Style for the search button container */
+.search-button {
+    background: transparent;
+    padding: 5px;
+    background-color: #007bff;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0; /* Prevent the button from shrinking */
+    width: 30px;
+    height: 30px;
+}
+
+/* Style for the search icon image inside the button */
+.search-button img {
+    border: none;
+    width: 20px; /* Further decrease the size of the search icon if needed */
+    height: auto; /* Maintain the aspect ratio */
+}
+
+.search-button:hover {
+    background-color: #0056b3; /* darker shade on hover */
+}
+
+
+#suggestions {
+    list-style-type: none;
+    /* Additional styles for the suggestions dropdown */
+}
+.shift-input, 
+.solvent-input {
+    flex: 1; /* Allows these inputs to grow and fill the space */
+    /* You can also give them a max-width if you want to limit their size */
+    max-width: 250px; /* Example max width */
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .form-group, .or-divider, #search-button {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    .form-group {
+        flex-direction: column; /* Stack label and input vertically on smaller screens */
+        align-items: flex-start; /* Align to the start for smaller screens */
+    }
+    .form-group label {
+        margin-right: 0; /* Reset the margin for smaller screens */
+    }
+}
+
+/* Footer styles */
+footer {
+    padding: 20px;
+    background: #eaeaea; /* Footer background color */
+    text-align: center; /* Center the text */
+}
+
+.red-text {
+    color: red; /* or the specific shade of red you want */
+}
+
+/* Red bar */
+.red-bar {
+    width: 5px; /* Narrow width for a vertical bar */
+    height: 100%; /* Full height relative to the parent element */
+    background-color: red;
+    display: inline-block;
+    vertical-align: middle; /* Align the bar to the middle vertically if needed */
+}
+
+
+/* Results container */
+#results-container {
+    margin-top: 20px; /* Space between form and results container */
+    background-color: #fff; /* Set the background to white */
+    padding: 10px; /* Add some padding */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: add a subtle shadow for depth */
+
+}
+
+.nmr-results {
+    width: 100%; /* Full width */
+    border-collapse: collapse; /* Collapse borders for a clean look */
+    table-layout: fixed; /* Fixed table layout for equal column widths */
+    background-color: #fff; /* White background for the table */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    margin-bottom: 20px; /* Space below the table */
+}
+
+/* Table headers */
+.nmr-results th {
+    background-color: #f7f7f7; /* Light grey background for headers */
+    color: #333; /* Dark grey text for contrast */
+    font-weight: normal; /* Normal font weight for headers */
+    text-align: left; /* Align text to the left */
+    padding: 10px; /* Padding for spacing */
+    border-bottom: 1px solid #ddd; /* Border to separate from table body */
+}
+
+/* Table rows and cells */
+.nmr-results td {
+    padding: 10px; /* Padding for spacing */
+    border-bottom: 1px solid #eee; /* Light border for each row */
+}
+
+/* Hover effect for rows */
+.nmr-results tr:hover {
+    background-color: #D8EAEF; /* Just change the background color */
+}
+
+/* Make the 'Shift' column text red */
+.nmr-results td:first-child {
+    color: #FF0000; /* Red text color for the 'Shift' column */
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+    .nmr-results {
+        box-shadow: none; /* Remove shadow on smaller screens */
+    }
+
+    .nmr-results, .nmr-results th, .nmr-results td {
+        display: block; /* Block display for responsive layout */
+    }
+
+    .nmr-results th {
+        text-align: right; /* Right-align headers for a stacked layout */
+        padding-left: 50%; /* Padding to push text to the right */
+    }
+
+    .nmr-results td {
+        text-align: right; /* Right-align text for readability */
+        padding-left: 50%; /* Padding to push text to the right */
+    }
+
+    .nmr-results td:before {
+        content: attr(data-label); /* Use a data-label attribute for content */
+        float: left;
+        font-weight: bold; /* Bold labels in the responsive view */
+    }
+}
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .header-logo {
+        width: 100px; /* Smaller logo on mobile */
+    }
+
+    /* Adjust main padding on smaller screens */
+    main {
+        padding: 10px;
+    }
+}
+
+
+/* Style for body img */
+.Body-img {
+    max-width: 100%; /* This makes sure the image is responsive */
+    height: auto; /* This maintains the aspect ratio */
+    display: block; /* This makes the image a block-level element */
+    margin-left: 0px; /* Adjust the left margin as needed */
+    margin-top: 0px; /* Adjust the top margin as needed */
+    position: relative; /* Position it absolutely relative to the header */
+    top: 0; /* Position at the top */
+    left: 0; /* Position at the left */
+}
+
+/* Style for header logo */
+.header-logo {
+    max-width: 10%; /* This makes sure the image is responsive */
+    height: auto; /* This maintains the aspect ratio */
+    display: block; /* This makes the image a block-level element */
+    margin-left: 10px; /* Adjust the left margin as needed */
+    margin-top: 10px; /* Adjust the top margin as needed */
+    position: relative; /* Position it absolutely relative to the header */
+    top: 0; /* Position at the top */
+    left: 0; /* Position at the left */
+}
+
+/* Style for header container, if not already defined */
+header {
+    position: relative; /* This allows absolute positioning within the header */
+}
+
+
+
+
+footer {
+    background-color: #eaeaea; /* This sets the footer background color to light gray */
+    color: #333; /* Adjust the text color as needed */
+    padding: 20px 0; /* Add some padding */
+    font-size: 0.8em; /* Adjust the font size as needed */
+}
+
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: flex-start; /* Align items to the top */
+    max-width: 1200px; /* Adjust the max width as needed */
+    margin: 0 auto;
+    text-align: center;
+}
+
+.footer-section {
+    margin: 10px;
+    flex: 1; /* Gives each footer section equal flex grow/shrink capabilities */
+    min-width: 180px; /* Ensure sections don't get too narrow */
+    text-align: left;
+}
+/* Style for links in the footer */
+.footer-section a {
+    color: #333; /* Sets the text color of links */
+    text-decoration: none; /* Removes the underline from links */
+    line-height: 1.5; /* Adjust line height for better readability */
+    display: block; /* Makes each link take up its own line */
+    margin-bottom: 5px; /* Adds some space below each link */
+}
+
+.footer-section a:hover {
+    text-decoration: underline; /* Adds an underline on hover for better user experience */
+}
+
+.footer-qr {
+    width: 100px; /* Explicit width for the QR code */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 10px;
+    flex-shrink: 0; /* Prevent the QR code from shrinking */
+}
+
+/* Style for unordered list in the footer */
+.footer-section ul {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 0; /* Align the top of the list with the h3 */
+}
+
+/* Style for list items in the footer */
+.footer-section ul li {
+    line-height: 1.5; /* Adjust line height for better readability */
+    text-align: left; /* Align text to the left */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        align-items: center; /* Center align the footer sections */
+    }
+
+    .footer-section {
+        flex-basis: 100%; /* Allow each section to take the full width of the container */
+        margin-bottom: 20px;
+        text-align: Center; /* Center-align text for small screens */
+    }
+    
+    .footer-section a {
+        text-align: center;
+    }
+    
+    .footer-section ul, .footer-section ul li {
+        text-align: center; /* Center-align list items for small screens */
+    }
+
+    .footer-qr {
+        margin: 0 auto 10px; /* Center the QR code and add margin to the bottom */
+    }
+}
+
