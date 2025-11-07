@@ -1,0 +1,178 @@
+# streamlit_market_equilibrium.py
+import streamlit as st
+import numpy as np
+import plotly.graph_objects as go
+
+st.set_page_config(page_title="Market Equilibrium: Competition → Monopoly", layout="centered")
+
+st.title("Market Equilibrium: Perfect Competition → Monopoly")
+st.write(
+    """
+Use the sliders to change demand/supply and the **degree of market power** (approximate number of Cournot competitors).
+The chart shows demand (D), supply / marginal cost (S/MC), marginal revenue (MR) for the **effective** market power,
+and shades **deadweight loss (DWL)** relative to the perfectly competitive outcome.
+"""
+)
+
+colA, colB = st.columns(2)
+
+with colA:
+    st.subheader("Demand (inverse):  P = a - b·Q")
+    a = st.slider("Demand intercept a", min_value=1.0, max_value=200.0, value=120.0, step=1.0)
+    b = st.slider("Demand slope b (>0)", min_value=0.01, max_value=50.0, value=1.0, step=0.1)
+
+with colB:
+    st.subheader("Supply / MC:  P = c + d·Q")
+    c = st.slider("Supply intercept c", min_value=0.0, max_value=150.0, value=20.0, step=1.0)
+    d = st.slider("Supply slope d (≥0)", min_value=0.0, max_value=3.0, value=0.5, step=0.05)
+
+st.subheader("Market Power (Cournot N firms)")
+N = st.slider("Number of (symmetric) firms N (N=1 Monopoly; large N ≈ Competition)",
+              min_value=1, max_value=100, value=1, step=1)
+show_mr = st.checkbox("Show MR line for the **effective** market power", value=True)
+
+# ---------- Model helpers ----------
+def P_d(Q):  # inverse demand
+    return a - b * Q
+
+def P_s(Q):  # supply / marginal cost
+    return c + d * Q
+
+def Q_comp():
+    # Perfect competition: D intersects S
+    return max(0.0, (a - c) / (b + d)) if (b + d) > 0 else 0.0
+
+def Q_monopoly():
+    # Monopoly: MR = MC; for linear demand, MR has slope 2b: a - 2bQ = c + dQ
+    denom = 2*b + d
+    return max(0.0, (a - c) / denom) if denom > 0 else 0.0
+
+def Q_cournot(N):
+    # Cournot with linear D and linear MC (symmetric firms)
+    # Total Q = (a - c) / (b + d*(N+1))
+    denom = b + d * (N + 1)
+    return max(0.0, (a - c) / denom) if denom > 0 else 0.0
+
+def MR_line_Q_to_P(Q, N):
+    # Effective MR for Cournot N for plotting intuition:
+    # P_MR(Q) = a - (1 + 1/N) * b * Q. As N→∞, MR→Demand.
+    return a - (1.0 + 1.0/float(N)) * b * Q
+
+# ---------- Compute outcomes ----------
+Q_pc = Q_comp()
+Q_m = Q_monopoly()
+Q_n = Q_cournot(N)
+
+P_pc = P_d(Q_pc)
+P_m = P_d(Q_m)
+P_n = P_d(Q_n)
+
+# Deadweight loss vs perfect competition
+def dwl_area(Q_out):
+    if Q_out >= Q_pc:
+        return 0.0
+    gap_out = P_d(Q_out) - P_s(Q_out)  # positive at Q_out under market power
+    base = Q_pc - Q_out
+    return 0.5 * gap_out * base
+
+dwl = dwl_area(Q_n)
+
+# Plot grid
+Q_max_candidate = max(Q_pc, Q_m, Q_n, (a - c)/max(b, 1e-6)) * 1.2
+Q_max = max(1.0, Q_max_candidate)
+Q = np.linspace(0, Q_max, 500)
+
+# ---------- Figure ----------
+fig = go.Figure()
+
+# Demand
+fig.add_trace(go.Scatter(x=Q, y=P_d(Q), mode="lines", name="Demand (D)", line=dict(width=3)))
+
+# Supply / MC
+fig.add_trace(go.Scatter(x=Q, y=P_s(Q), mode="lines", name="Supply / MC (S)", line=dict(width=3)))
+
+# MR for current market power
+if show_mr:
+    MR_vals = MR_line_Q_to_P(Q, N)
+    fig.add_trace(go.Scatter(x=Q, y=MR_vals, mode="lines", name=f"MR (N={N})", line=dict(width=2, dash="dash")))
+
+# Equilibrium markers
+fig.add_trace(go.Scatter(x=[Q_pc], y=[P_pc], mode="markers", name="Perfect Competition", marker=dict(size=10)))
+label_current = "Monopoly" if N == 1 else f"Cournot (N={N})"
+fig.add_trace(go.Scatter(x=[Q_n], y=[P_n], mode="markers", name=label_current, marker=dict(size=10)))
+
+# DWL shading relative to perfect competition
+if Q_n < Q_pc:
+    Q_fill = np.linspace(Q_n, Q_pc, 80)
+    fig.add_trace(go.Scatter(
+        x=list(Q_fill) + list(Q_fill[::-1]),
+        y=list(P_d(Q_fill)) + list(P_s(Q_fill))[::-1],
+        fill="toself",
+        name="Deadweight Loss (vs. PC)",
+        mode="lines",
+        line=dict(width=0),
+        opacity=0.3
+    ))
+
+# Layout
+fig.update_layout(
+    xaxis_title="Quantity (Q)",
+    yaxis_title="Price (P)",
+    template="plotly_white",
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+    margin=dict(l=20, r=20, t=40, b=20),
+    height=520
+)
+
+# KPI table
+col1, col2, col3, col4 = st.columns(4)
+col1.metric("Q (Perfect Comp.)", f"{Q_pc:.2f}", "")
+col2.metric(f"Q (N={N})", f"{Q_n:.2f}", f"{Q_n - Q_pc:+.2f}")
+col3.metric("P (Perfect Comp.)", f"{P_pc:.2f}", "")
+col4.metric(f"P (N={N})", f"{P_n:.2f}", f"{P_n - P_pc:+.2f}")
+
+st.plotly_chart(fig, use_container_width=True)
+
+st.caption(
+    "DWL is shaded relative to the perfectly competitive allocation (Demand ∩ Supply). "
+    "Under N=1 (monopoly), the marker moves to MR = MC. For finite N, the Cournot outcome is used."
+)
+
+with st.expander("Formulas & Notes"):
+    st.markdown(f"""
+- **Demand:** \(P = a - bQ\)  
+- **Supply / MC:** \(P = c + dQ\)  
+- **Perfect Competition:** \(Q^\\* = \\frac{{a - c}}{{b + d}},\\ P^\\* = a - bQ^\\*\)  
+- **Monopoly (N=1):** \(MR = a - 2bQ = c + dQ \\Rightarrow Q_M = \\frac{{a - c}}{{2b + d}},\\ P_M = a - bQ_M\)  
+- **Cournot (N firms):** \(Q_N = \\frac{{a - c}}{{b + d(N+1)}},\\ P_N = a - bQ_N\)  
+- **Effective MR for Cournot:** \(MR_N(Q) = a - (1 + 1/N)bQ\) (for plotting intuition).  
+- **DWL (vs PC):** \(\\text{{DWL}} = \\int_{{Q_N}}^{{Q^\\*}} [P_D(Q) - P_S(Q)]\\, dQ\\) (shown as a triangle for linear curves).
+    """)
+
+st.markdown("---")
+st.subheader("How this helps the pricing conversation")
+st.markdown(
+    """
+**Why pricing is hard:**  
+1) *Trade-off:* As market power rises (lower N), price goes up, quantity goes down → DWL increases.  
+2) *Elasticity uncertainty:* True slope of demand (b) is rarely known; small errors shift optimal price a lot.  
+3) *Cost dynamics:* MC slope (d) moves with utilization & input prices, changing the profit-maximizing point.  
+4) *Competitive response:* N is not fixed—entry/exit, capacity, and shadow competition (substitutes) matter.  
+5) *Policy & fairness:* Higher prices can trigger regulatory risk or churn (long-run demand shifts).
+
+**What we can do:**  
+- Invest in **elasticity estimation** (experiments, price tests, causal ML) to pin down *a, b*.  
+- Improve **cost visibility** to measure *c, d* in near real-time.  
+- Use **segment-level curves** (different a/b) and **tiered pricing** to move along the demand surface.  
+- Plan **playbooks by N**: competitive markets (large N) focus on efficiency; concentrated markets (small N) on margin with guardrails.  
+- Monitor **DWL/consumer impact** and define thresholds tied to brand & regulatory objectives.
+
+**What we cannot (safely) do:**  
+- Assume demand is linear or static across time/segments without validation.  
+- Ignore substitution: raising price may shift demand outside our market definition.  
+- Optimize for short-run monopoly outcomes if it harms long-run adoption or invites regulation.  
+- Treat N as exogenous—our pricing can alter entry incentives of rivals.
+"""
+)
+
+st.info("Tip: Set N=100 to approximate perfect competition; set N=1 for monopoly. Try changing b and d to see how elastic demand or steep marginal costs reshape the optimal outcome.")
